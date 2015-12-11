@@ -4,15 +4,20 @@ library(shiny)
 shinyUI(
   navbarPage("spup Visualisation",
               tabPanel("Continuous",
-               fluidRow(
-                 column(4,
+               sidebarLayout(
+                 sidebarPanel(
                     sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
                     ),
-                 column(8,
+                 mainPanel(
                         fluidRow(
-                          column(6, plotOutput("contPlot1")
+                          column(6, plotOutput("contPlot1",
+                                               click = clickOpts(id = "contPlot_click"),
+                                               dblclick = dblclickOpts(id = "contPlot_dblclick"),
+                                               hover = hoverOpts(id = "contPlot_hover"),
+                                               brush = brushOpts(id = "contPlot_brush")
+                                               )
                           ),
-                          column(6, plotOutput("contPlot2")
+                          column(6, verbatimTextOutput("contPlot2")
                           )
                         ),
                         fluidRow(
@@ -25,15 +30,20 @@ shinyUI(
                 )
               ),
               tabPanel("Categorical",
-                fluidRow(
-                  column(4,
+                sidebarLayout(
+                  sidebarPanel(
                     numericInput("n", "sample", value = 25),
                     numericInput("n2", "sample", value = 50)
                   ),
-                  column(8,
+                  mainPanel(
                     fluidRow(
-                      column(6, plotOutput("catPlot1")
-                        ),
+                      column(6, plotOutput("catPlot1",
+                                           click = clickOpts(id = "catPlot_click"),
+                                           dblclick = dblclickOpts(id = "catPlot_dblclick"),
+                                           hover = hoverOpts(id = "catPlot_hover"),
+                                           brush = brushOpts(id = "catPlot_brush")
+                                           )
+                      ),
                       column(6, plotOutput("catPlot2")
                         )
                       ),
@@ -49,3 +59,7 @@ shinyUI(
     inverse = T
   )
 )
+
+
+
+
