@@ -4,6 +4,22 @@ library(shiny)
 
 
 shinyServer(function(input, output) {
+  #Test data
+  data <- simulations
+  mean.df<- as.data.frame(simulations@Mean, xy = T)
+  std.df<- as.data.frame(simulations@Standard.Deviation, xy = T)
+  
+  
+  theme <- theme(plot.title = element_text(),
+                 panel.grid = element_blank(),
+                 panel.border = element_rect(colour = "black", fill = "NA"),
+                 axis.ticks = element_blank(),
+                 axis.text.y = element_blank(),
+                 axis.text.x = element_blank(),
+                 strip.background = element_blank(),
+                 legend.title = element_text(size = 14, face = "bold"),
+                 legend.key = element_rect(fill='white'),
+                 legend.text = element_text(size = 12))
   
   # Expression that generates a histogram. The expression is
   # wrapped in a call to renderPlot to indicate that:
@@ -13,13 +29,23 @@ shinyServer(function(input, output) {
   #  2) Its output type is a plot
   
   output$contPlot1 <- renderPlot({
-    x    <- faithful[, 2]  # Old Faithful Geyser data
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    ggplot(na.omit(mean.df), aes(x=x, y=y)) +
+      geom_tile(aes(fill = layer)) +
+      coord_equal(xlim=c(min(mean.df$x),max(mean.df$x)),ylim = c(min(mean.df$y),max(mean.df$y))) +
+      theme
   })
-  output$contPlot2 <- renderPrint({
+
+
+  output$contPlot2 <- renderPlot({
+    if (!is.null(input$contPlot_click)) {
+    mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
+    realisations <- extract(data@Realisations, mat)
+    hist(realisations) 
+    }
+    })
+  
+  output$contPlot3 <- renderPrint({
     str(input$contPlot_click)
   })
   

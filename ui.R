@@ -17,11 +17,11 @@ shinyUI(
                                                brush = brushOpts(id = "contPlot_brush")
                                                )
                           ),
-                          column(6, verbatimTextOutput("contPlot2")
+                          column(6, plotOutput("contPlot2")
                           )
                         ),
                         fluidRow(
-                          column(6, plotOutput("contPlot3")
+                          column(6, verbatimTextOutput("contPlot3")
                           ),
                           column(6, plotOutput("contPlot4")
                           )
