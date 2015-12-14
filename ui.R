@@ -4,9 +4,14 @@ library(shiny)
 shinyUI(
   navbarPage("spup Visualisation",
               tabPanel("Continuous",
+                    
                sidebarLayout(
                  sidebarPanel(
-                    sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
+                    radioButtons("options", "Display Options",
+                                 choices = c("Standard Deviation",
+                                             "Quantiles"),
+                                 selected = "Standard Deviation"
+                                  )
                     ),
                  mainPanel(
                         fluidRow(
@@ -57,6 +62,7 @@ shinyUI(
                 )
     ),
     inverse = T
+    
   )
 )
 

@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 # Define server 
 
 
@@ -46,7 +47,22 @@ shinyServer(function(input, output) {
     })
   
   output$contPlot3 <- renderPrint({
-    str(input$contPlot_click)
+    if (!is.null(input$contPlot_click)) {
+      mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
+      realisations <- extract(data@Realisations, mat)
+      print("Mean")
+      print(mean(realisations))
+      print("Standard Deviation")
+      print(sd(realisations))
+      }
+    })
+  
+  output$contPlot4 <- renderPlot({
+    if (!is.null(input$contPlot_click)) {
+      mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
+      realisations <- extract(data@Realisations, mat)
+      plot(density(realisations))
+    }
   })
   
   output$catPlot1 <- renderPlot({
