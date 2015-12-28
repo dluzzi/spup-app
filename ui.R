@@ -8,10 +8,14 @@ shinyUI(
                sidebarLayout(
                  sidebarPanel(
                     radioButtons("options", "Display Options",
-                                 choices = c("Standard Deviation",
-                                             "Quantiles"),
-                                 selected = "Standard Deviation"
-                                  )
+                                 choices = c("Mean",
+                                             "Standard Deviation"),
+                                 selected = "Mean"
+                                  ),
+                    conditionalPanel("input.options == 'Mean'",
+                    sliderInput("slidermean", "Quantile", min = 0, max = 1, value = 0)),
+                    conditionalPanel("input.options == 'Standard Deviation'",
+                                     sliderInput("sliderstd", "Confidence", min = 0, max = 100, value = 100))
                     ),
                  mainPanel(
                         fluidRow(
@@ -37,8 +41,9 @@ shinyUI(
               tabPanel("Categorical",
                 sidebarLayout(
                   sidebarPanel(
-                    numericInput("n", "sample", value = 25),
-                    numericInput("n2", "sample", value = 50)
+                    radioButtons("catoptions", "Display Options", 
+                                 choices = c("Most Likely Class"),
+                                 selected = "Most Likely Class")
                   ),
                   mainPanel(
                     fluidRow(
@@ -53,7 +58,7 @@ shinyUI(
                         )
                       ),
                       fluidRow(
-                        column(6, plotOutput("catPlot3")
+                        column(6, verbatimTextOutput("catPlot3")
                           ),
                         column(6, plotOutput("catPlot4")
                           )
