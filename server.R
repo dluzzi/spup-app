@@ -34,6 +34,10 @@ shinyServer(function(input, output) {
   #     when inputs change
   #  2) Its output type is a plot
   
+  output$slider <- renderUI({
+    sliderInput("sliderstd", "Confidence", min = 0, max = ceiling(max(std.df$layer)), value = ceiling(max(std.df$layer)))
+  })
+  
   output$contPlot1 <- renderPlot({
     if(input$options == "Mean"){
       dist <- rnorm(length(mean.df$layer), mean(mean.df$layer), sd(mean.df$layer))
@@ -54,9 +58,9 @@ shinyServer(function(input, output) {
         if (std.df$layer[i] > input$sliderstd) {
           std.df$layer[i] <- NA
         }}
-      map <- ggplot(na.omit(std.df), aes(x=x, y=y)) +
+      map <- ggplot(std.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(colours = colorRampPalette(c("black", "white"))(25), name = input$options) +
+        scale_fill_gradientn(na.value = "red", colours = colorRampPalette(c("black", "white"))(25), name = input$options) +
         coord_equal(xlim=c(min(std.df$x),max(std.df$x)),ylim = c(min(std.df$y),max(std.df$y))) +
         theme
     }
@@ -72,20 +76,7 @@ shinyServer(function(input, output) {
     }
     })
   
-  output$contPlot3 <- renderPrint({
-    if (!is.null(input$contPlot_click)) {
-      mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
-      realisations <- extract(data@Realisations, mat)
-      print("Mean")
-      print(mean(realisations))
-      print("Standard Deviation")
-      print(sd(realisations))
-      print(input$contPlot_click)
-
-      }
-    })
-  
-  output$contPlot4 <- renderPlot({
+  output$contPlot3 <- renderPlot({
     if (!is.null(input$contPlot_click) & !is.null(input$contPlot_dblclick)) {
       mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
       realisations <- extract(data@Realisations, mat)
@@ -103,7 +94,7 @@ shinyServer(function(input, output) {
       coord_equal(xlim=c(min(mlc.df$x),max(mlc.df$x)),ylim = c(min(mlc.df$y),max(mlc.df$y))) +
       theme
     })
-  output$catPlot2 <- renderPlot({
+  output$catPlot3 <- renderPlot({
     if (!is.null(input$catPlot_click)) {
       mat <- matrix(c(input$catPlot_click$x, input$catPlot_click$y), ncol = 2)
       realisations <- extract(cat@Realisations, mat)
@@ -120,10 +111,8 @@ shinyServer(function(input, output) {
       pie(list, main = "Class probabilities of realisations") 
     }
   })
-  output$catPlot3 <- renderPrint({
+  output$catPlot2 <- renderPrint({
     print(input$catPlot_click) 
-  })
-  output$catPlot4 <- renderPlot({
   })
   
 })
