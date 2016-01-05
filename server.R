@@ -14,6 +14,8 @@ shinyServer(function(input, output) {
   mlc.df<- as.data.frame(cat@Most.Likely.Class, xy = T)
   clpb.df<- as.data.frame(cat@Class.Probabilities, xy = T)
   
+  rel.error <- (std.df$layer/mean.df$layer)*100
+  rel.error[is.na(rel.error)] <- 0
   
   
   theme <- theme(plot.title = element_text(),
@@ -34,22 +36,36 @@ shinyServer(function(input, output) {
   #     when inputs change
   #  2) Its output type is a plot
   
-  output$slider <- renderUI({
-    sliderInput("sliderstd", "Confidence", min = 0, max = ceiling(max(std.df$layer)), value = ceiling(max(std.df$layer)))
+  output$relerrorslider <- renderUI({
+    sliderInput("relerror", "Relative Error (%)", min = 0, max = ceiling(max(rel.error)), 
+                value = ceiling(max(rel.error)),
+                step = 0.01)
   })
   
-  output$contPlot1 <- renderPlot({
-    if(input$options == "Mean"){
-      dist <- rnorm(length(mean.df$layer), mean(mean.df$layer), sd(mean.df$layer))
-      quantile <- quantile(dist, input$slidermean)
-      for (i in 1:length(mean.df$layer)){
-        if (mean.df$layer[i] < quantile) {
-          mean.df$layer[i] <- NA
+  output$predintervalslider <- renderUI({
+    numericInput("predinterval", "Prediction Interval", value = 90, min = 100, max = 100, step = 5)
+  })
+  
+  output$contPlot1 <- renderPlot({100
+    if (input$options == "Mean"){
+      if (input$statistics == "Relative Error"){
+        for (i in 1:length(mean.df$layer)){
+          if (rel.error[i] > input$relerror) {
+            mean.df$layer[i] <- NA
+          }
         }
       }
-      map <- ggplot(na.omit(mean.df), aes(x=x, y=y)) +
+      if (input$statistics == "Prediction Interval"){
+        for (i in 1:length(mean.df$layer)){
+          if (rel.error[i] > input$relerror) {
+            mean.df$layer[i] <- NA
+          }
+        }
+      }
+
+      map <- ggplot(mean.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
+        scale_fill_gradientn(na.value = "red", colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
         coord_equal(xlim=c(min(mean.df$x),max(mean.df$x)),ylim = c(min(mean.df$y),max(mean.df$y))) +
         theme
     }

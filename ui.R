@@ -12,10 +12,14 @@ shinyUI(
                                              "Standard Deviation"),
                                  selected = "Mean"
                                   ),
-                    conditionalPanel("input.options == 'Mean'",
-                    sliderInput("slidermean", "Quantile", min = 0, max = 1, value = 0)),
-                    conditionalPanel("input.options == 'Standard Deviation'",
-                                     uiOutput("slider"))
+                    radioButtons("statistics", "More Information",
+                                 choices = c("Relative Error",
+                                             "Prediction Interval"),
+                                 selected = "Relative Error"),
+                    conditionalPanel("input.statistics == 'Relative Error'",
+                                    uiOutput("relerrorslider")),
+                    conditionalPanel("input.statistics == 'Prediction Interval'",
+                                     uiOutput("predintervalslider"))
                     ),
                  mainPanel(
                         fluidRow(
