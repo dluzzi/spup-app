@@ -15,7 +15,7 @@ shinyServer(function(input, output) {
   clpb.df<- as.data.frame(cat@Class.Probabilities, xy = T)
   
   rel.error <- (std.df$layer/mean.df$layer)*100
-  rel.error[is.na(rel.error)] <- 0
+  rel.error[is.na(rel.error)] <- -1
   
   
   theme <- theme(plot.title = element_text(),
@@ -36,19 +36,33 @@ shinyServer(function(input, output) {
   #     when inputs change
   #  2) Its output type is a plot
   
+  predictionInterval <- reactive({
+    mean <- mean.df$layer
+    std <- std.df$layer
+    n <- length(data@Realisations[1])
+    confidence <- (1 - (input$percentage/100))/2
+    confidence <- 1 - confidence
+    error <- qt(confidence, df=n-1)*std/sqrt(n)
+    interval <- 2*error
+    interval[is.na(interval)] <- -1
+    return(interval)
+  })
+  
   output$relerrorslider <- renderUI({
     sliderInput("relerror", "Relative Error (%)", min = 0, max = ceiling(max(rel.error)), 
                 value = ceiling(max(rel.error)),
                 step = 0.01)
   })
   
-  output$predintervalslider <- renderUI({
-    numericInput("predinterval", "Prediction Interval", value = 90, min = 100, max = 100, step = 5)
+  output$predinterval <- renderUI({
+    list(
+      numericInput("percentage", "Prediction Interval (%)", min = 0, max = 99.99, value = 90),
+      numericInput("predinterval", "Interval", value = 50 , min = 0, max = 10000, step = 5))
   })
   
-  output$contPlot1 <- renderPlot({100
+  output$contPlot1 <- renderPlot({
     if (input$options == "Mean"){
-      if (input$statistics == "Relative Error"){
+      if (input$statistics == "Relative Error"){  
         for (i in 1:length(mean.df$layer)){
           if (rel.error[i] > input$relerror) {
             mean.df$layer[i] <- NA
@@ -57,7 +71,7 @@ shinyServer(function(input, output) {
       }
       if (input$statistics == "Prediction Interval"){
         for (i in 1:length(mean.df$layer)){
-          if (rel.error[i] > input$relerror) {
+          if (predictionInterval()[i] > input$predinterval) {
             mean.df$layer[i] <- NA
           }
         }
@@ -65,18 +79,29 @@ shinyServer(function(input, output) {
 
       map <- ggplot(mean.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(na.value = "red", colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
+        scale_fill_gradientn(colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
         coord_equal(xlim=c(min(mean.df$x),max(mean.df$x)),ylim = c(min(mean.df$y),max(mean.df$y))) +
         theme
     }
     if(input$options == "Standard Deviation"){
-      for (i in 1:length(std.df$layer)){
-        if (std.df$layer[i] > input$sliderstd) {
-          std.df$layer[i] <- NA
-        }}
+      if (input$statistics == "Relative Error"){  
+        for (i in 1:length(mean.df$layer)){
+          if (rel.error[i] > input$relerror) {
+            std.df$layer[i] <- NA
+          }
+        }
+      }
+      if (input$statistics == "Prediction Interval"){
+        for (i in 1:length(mean.df$layer)){
+          if (predictionInterval()[i] > input$predinterval) {
+            std.df$layer[i] <- NA
+          }
+        }
+      }
+      
       map <- ggplot(std.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(na.value = "red", colours = colorRampPalette(c("black", "white"))(25), name = input$options) +
+        scale_fill_gradientn(colours = colorRampPalette(c("black", "white"))(25), name = input$options) +
         coord_equal(xlim=c(min(std.df$x),max(std.df$x)),ylim = c(min(std.df$y),max(std.df$y))) +
         theme
     }

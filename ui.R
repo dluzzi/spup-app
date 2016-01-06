@@ -13,13 +13,14 @@ shinyUI(
                                  selected = "Mean"
                                   ),
                     radioButtons("statistics", "More Information",
-                                 choices = c("Relative Error",
+                                 choices = c("None Selected" = "",
+                                             "Relative Error",
                                              "Prediction Interval"),
-                                 selected = "Relative Error"),
+                                 selected = ""),
                     conditionalPanel("input.statistics == 'Relative Error'",
                                     uiOutput("relerrorslider")),
                     conditionalPanel("input.statistics == 'Prediction Interval'",
-                                     uiOutput("predintervalslider"))
+                                     uiOutput("predinterval"))
                     ),
                  mainPanel(
                         fluidRow(
