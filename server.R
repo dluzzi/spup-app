@@ -65,21 +65,21 @@ shinyServer(function(input, output) {
       if (input$statistics == "Relative Error"){  
         for (i in 1:length(mean.df$layer)){
           if (rel.error[i] > input$relerror) {
-            mean.df$layer[i] <- NA
+            mean.df$layer[i] <- NaN
           }
         }
       }
       if (input$statistics == "Prediction Interval"){
         for (i in 1:length(mean.df$layer)){
           if (predictionInterval()[i] > input$predinterval) {
-            mean.df$layer[i] <- NA
+            mean.df$layer[i] <- NaN
           }
         }
       }
 
       map <- ggplot(mean.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
+        scale_fill_gradientn(na.value = "red",colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
         coord_equal(xlim=c(min(mean.df$x),max(mean.df$x)),ylim = c(min(mean.df$y),max(mean.df$y))) +
         theme
     }
@@ -87,21 +87,21 @@ shinyServer(function(input, output) {
       if (input$statistics == "Relative Error"){  
         for (i in 1:length(mean.df$layer)){
           if (rel.error[i] > input$relerror) {
-            std.df$layer[i] <- NA
+            std.df$layer[i] <- NaN
           }
         }
       }
       if (input$statistics == "Prediction Interval"){
         for (i in 1:length(mean.df$layer)){
           if (predictionInterval()[i] > input$predinterval) {
-            std.df$layer[i] <- NA
+            std.df$layer[i] <- NaN
           }
         }
       }
       
       map <- ggplot(std.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(colours = colorRampPalette(c("black", "white"))(25), name = input$options) +
+        scale_fill_gradientn(na.value = "red", colours = colorRampPalette(c("black", "white"))(20), name = input$options) +
         coord_equal(xlim=c(min(std.df$x),max(std.df$x)),ylim = c(min(std.df$y),max(std.df$y))) +
         theme
     }
