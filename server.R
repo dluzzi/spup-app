@@ -79,7 +79,7 @@ shinyServer(function(input, output) {
 
       map <- ggplot(mean.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(na.value = "red",colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
+        scale_fill_gradientn(colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$options) +
         coord_equal(xlim=c(min(mean.df$x),max(mean.df$x)),ylim = c(min(mean.df$y),max(mean.df$y))) +
         theme
     }
@@ -101,7 +101,7 @@ shinyServer(function(input, output) {
       
       map <- ggplot(std.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(na.value = "red", colours = colorRampPalette(c("black", "white"))(20), name = input$options) +
+        scale_fill_gradientn(colours = colorRampPalette(c("black", "white"))(20), name = input$options) +
         coord_equal(xlim=c(min(std.df$x),max(std.df$x)),ylim = c(min(std.df$y),max(std.df$y))) +
         theme
     }
