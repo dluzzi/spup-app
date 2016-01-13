@@ -36,16 +36,17 @@ shinyServer(function(input, output) {
   #     when inputs change
   #  2) Its output type is a plot
   
-  predictionInterval <- reactive({
-    mean <- mean.df$layer
-    std <- std.df$layer
-    n <- length(data@Realisations[1])
-    confidence <- (1 - (input$percentage/100))/2
-    confidence <- 1 - confidence
-    error <- qt(confidence, df=n-1)*std/sqrt(n)
-    interval <- 2*error
-    interval[is.na(interval)] <- -1
-    return(interval)
+  quantileValue <- reactive({
+    quantile <- input$quantileWidth
+    if (quantile == "1"){
+      threshold <- data@Quantiles$X75. - data@Quantiles$X25.
+    }
+    if (quantile == "2"){
+      threshold <- data@Quantiles$X95. - data@Quantiles$X5.
+    }
+    threshold <- as.data.frame(threshold)
+    threshold[is.na(threshold)] <- -1
+    return(threshold)
   })
   
   output$relerrorslider <- renderUI({
@@ -56,8 +57,9 @@ shinyServer(function(input, output) {
   
   output$predinterval <- renderUI({
     list(
-      numericInput("percentage", "Prediction Interval (%)", min = 0, max = 99.99, value = 90),
-      numericInput("predinterval", "Interval", value = 50 , min = 0, max = 10000, step = 5))
+      radioButtons("quantileWidth", "Prediction Interval Width", choices = c("50%" = "1", 
+                                                                       "90%" = "2")),
+      numericInput("predinterval", "Width Threshold", value = 50 , min = 0, max = 10000, step = 5))
   })
   
   output$contPlot1 <- renderPlot({
@@ -71,7 +73,7 @@ shinyServer(function(input, output) {
       }
       if (input$statistics == "Prediction Interval"){
         for (i in 1:length(mean.df$layer)){
-          if (predictionInterval()[i] > input$predinterval) {
+          if (quantileValue()[i,1] > input$predinterval) {
             mean.df$layer[i] <- NaN
           }
         }
@@ -93,7 +95,7 @@ shinyServer(function(input, output) {
       }
       if (input$statistics == "Prediction Interval"){
         for (i in 1:length(mean.df$layer)){
-          if (predictionInterval()[i] > input$predinterval) {
+          if (quantileValue()[i,1] > input$predinterval) {
             std.df$layer[i] <- NaN
           }
         }
@@ -101,7 +103,7 @@ shinyServer(function(input, output) {
       
       map <- ggplot(std.df, aes(x=x, y=y)) +
         geom_tile(aes(fill = layer)) +
-        scale_fill_gradientn(colours = colorRampPalette(c("black", "white"))(20), name = input$options) +
+        scale_fill_gradientn(colours = colorRampPalette(c("black", "#699feb"))(20), name = input$options) +
         coord_equal(xlim=c(min(std.df$x),max(std.df$x)),ylim = c(min(std.df$y),max(std.df$y))) +
         theme
     }
