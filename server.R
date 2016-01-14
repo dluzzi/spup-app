@@ -114,8 +114,8 @@ shinyServer(function(input, output) {
   output$contPlot2 <- renderPlot({
     if (!is.null(input$contPlot_click)) {
     mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
-    realisations <- extract(data@Realisations, mat)
-    hist(realisations) 
+    Realisations <- extract(data@Realisations, mat)
+    hist(Realisations) 
     }
     })
   
@@ -125,7 +125,10 @@ shinyServer(function(input, output) {
       realisations <- extract(data@Realisations, mat)
       mat2 <- matrix(c(input$contPlot_dblclick$x, input$contPlot_dblclick$y), ncol = 2)
       realisations2 <- extract(data@Realisations, mat2)
-      plot(realisations, realisations2)
+      plot(realisations, realisations2, asp = 1, main = "Scatterplot of realisations",
+           xlab = "Realisations of single-click point",
+           ylab = "Realisaitons of double-click point")
+      abline(0,1)
     }
   })
   
