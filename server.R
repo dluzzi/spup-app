@@ -29,12 +29,6 @@ shinyServer(function(input, output) {
                  legend.key = element_rect(fill='white'),
                  legend.text = element_text(size = 12))
   
-  # Expression that generates a histogram. The expression is
-  # wrapped in a call to renderPlot to indicate that:
-  #
-  #  1) It is "reactive" and therefore should re-execute automatically
-  #     when inputs change
-  #  2) Its output type is a plot
   
   quantileValue <- reactive({
     quantile <- input$quantileWidth
