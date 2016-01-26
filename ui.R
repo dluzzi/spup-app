@@ -26,9 +26,7 @@ shinyUI(
                         fluidRow(
                           plotOutput("contPlot1",
                             click = clickOpts(id = "contPlot_click"),
-                            dblclick = dblclickOpts(id = "contPlot_dblclick"),
-                            hover = hoverOpts(id = "contPlot_hover"),
-                            brush = brushOpts(id = "contPlot_brush")
+                            dblclick = dblclickOpts(id = "contPlot_dblclick")
                           )
                         ),
                         fluidRow(
@@ -51,13 +49,11 @@ shinyUI(
                     fluidRow(
                       plotOutput("catPlot1",
                         click = clickOpts(id = "catPlot_click"),
-                        dblclick = dblclickOpts(id = "catPlot_dblclick"),
-                        hover = hoverOpts(id = "catPlot_hover"),
-                        brush = brushOpts(id = "catPlot_brush")
+                        dblclick = dblclickOpts(id = "catPlot_dblclick")
                         )
                       ),
                     fluidRow(
-                      column(6, verbatimTextOutput("catPlot2")
+                      column(6, plotOutput("catPlot2")
                       ),
                       column(6, plotOutput("catPlot3")
                       )

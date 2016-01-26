@@ -135,12 +135,12 @@ shinyServer(function(input, output) {
   output$catPlot1 <- renderPlot({
     
     ggplot(na.omit(mlc.df), aes(x=x, y=y)) +
-      geom_tile(aes(fill = layer)) +
-      scale_fill_gradientn(colours=colorRampPalette(c("#3f524c", "#5a7b5e", "#96ac87", "#cfc59f", "#fdedd8"))(20), name = input$catoptions) +
+      geom_tile(aes(fill = factor(layer))) +
+      scale_fill_discrete(name = "Most Likely Class") +
       coord_equal(xlim=c(min(mlc.df$x),max(mlc.df$x)),ylim = c(min(mlc.df$y),max(mlc.df$y))) +
       theme
     })
-  output$catPlot3 <- renderPlot({
+  output$catPlot2 <- renderPlot({
     if (!is.null(input$catPlot_click)) {
       mat <- matrix(c(input$catPlot_click$x, input$catPlot_click$y), ncol = 2)
       realisations <- extract(cat@Realisations, mat)
@@ -157,8 +157,6 @@ shinyServer(function(input, output) {
       pie(list, main = "Class probabilities of realisations") 
     }
   })
-  output$catPlot2 <- renderPrint({
-    print(input$catPlot_click) 
-  })
+
   
 })
