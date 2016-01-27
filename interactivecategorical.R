@@ -1,6 +1,30 @@
-interactiveCategorical <- function(data) {
+#' Interactively Visualise Continuous Spatial Data
+#' 
+#' Allows for visualising spatial uncertainty for continuous data in an
+#' interactive interface. Options include basic map of predicted values and
+#' standard deviation, as well as observing relative error and prediction
+#' intervals. 
+#' 
+#' @param x Object of class simulations. Must contain continuous data. 
+#'   
+#' @return Interactive application to visualise the data.
+#' @export
+#' 
+#' @examples
+interactiveCategorical <- function(x) {
   require(shiny)
   require(ggplot2)
+  require(raster)
+  
+  # Check if x is of correct class
+  if (is(x, "Simulations") != T) {
+    stop("Expected object of class Simulations")
+  }
+  
+  # Check if x is of continuous data
+  if (hasValues(x@Mean) != T) {
+    stop("simulations object expected to contain continuous data")
+  }
   
   shinyApp(
     ui = fluidPage(
@@ -21,8 +45,8 @@ interactiveCategorical <- function(data) {
     
     server = function(input, output) {
       
-      mlc.df<- as.data.frame(data@Most.Likely.Class, xy = T)
-      clpb.df<- as.data.frame(data@Class.Probabilities, xy = T)
+      mlc.df<- as.data.frame(x@Most.Likely.Class, xy = T)
+      clpb.df<- as.data.frame(x@Class.Probabilities, xy = T)
       
       theme <- theme(plot.title = element_text(),
                      panel.grid = element_blank(),
@@ -47,7 +71,7 @@ interactiveCategorical <- function(data) {
       output$catPlot2 <- renderPlot({
         if (!is.null(input$catPlot_click)) {
           mat <- matrix(c(input$catPlot_click$x, input$catPlot_click$y), ncol = 2)
-          realisations <- extract(data@Realisations, mat)
+          realisations <- extract(x@Realisations, mat)
           
           i = min(realisations)
           range <- min(realisations):max(realisations)

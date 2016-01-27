@@ -1,6 +1,29 @@
-interactiveContinuous <- function(data){
+#' Interactively Visualise Categorical Spatial Data
+#' 
+#' Allows for visualising spatial uncertainty for categorical data in an 
+#' interactive interface. Allows for more knowledge about class probabilities at
+#' a certain location.
+#' 
+#' @param x Object of class simulations. Must contain continuous data.
+#'   
+#' @return Interactive application to visualise the data.
+#' @export
+#' 
+#' @examples
+interactiveContinuous <- function(x){
   require(shiny)
   require(ggplot2)
+  require(raster)
+  
+  # Check if x is of correct class
+  if (is(x, "Simulations") != T) {
+    stop("Expected object of class Simulations")
+  }
+  
+  # Check if x is of continuous data
+  if (hasValues(x@Mean) != T) {
+    stop("simulations object expected to contain continuous data")
+  }
   
   shinyApp(
     ui = fluidPage(
@@ -39,8 +62,8 @@ interactiveContinuous <- function(data){
       )
     ),
     server = function(input, output) {
-      mean.df<- as.data.frame(data@Mean, xy = T)
-      std.df<- as.data.frame(data@Standard.Deviation, xy = T)
+      mean.df<- as.data.frame(x@Mean, xy = T)
+      std.df<- as.data.frame(x@Standard.Deviation, xy = T)
       rel.error <- (std.df$layer/mean.df$layer)*100
       rel.error[is.na(rel.error)] <- -1
       
@@ -59,10 +82,10 @@ interactiveContinuous <- function(data){
       quantileValue <- reactive({
         quantile <- input$quantileWidth
         if (quantile == "1"){
-          threshold <- data@Quantiles$X75. - data@Quantiles$X25.
+          threshold <- x@Quantiles$X75. - x@Quantiles$X25.
         }
         if (quantile == "2"){
-          threshold <- data@Quantiles$X95. - data@Quantiles$X5.
+          threshold <- x@Quantiles$X95. - x@Quantiles$X5.
         }
         threshold <- as.data.frame(threshold)
         threshold[is.na(threshold)] <- -1
@@ -134,7 +157,7 @@ interactiveContinuous <- function(data){
       output$contPlot2 <- renderPlot({
         if (!is.null(input$contPlot_click)) {
           mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
-          Realisations <- extract(data@Realisations, mat)
+          Realisations <- extract(x@Realisations, mat)
           hist(Realisations) 
         }
       })
@@ -142,9 +165,9 @@ interactiveContinuous <- function(data){
       output$contPlot3 <- renderPlot({
         if (!is.null(input$contPlot_click) & !is.null(input$contPlot_dblclick)) {
           mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
-          realisations <- extract(data@Realisations, mat)
+          realisations <- extract(x@Realisations, mat)
           mat2 <- matrix(c(input$contPlot_dblclick$x, input$contPlot_dblclick$y), ncol = 2)
-          realisations2 <- extract(data@Realisations, mat2)
+          realisations2 <- extract(x@Realisations, mat2)
           plot(realisations, realisations2, asp = 1, main = "Scatterplot of realisations",
                xlab = "Realisations of single-click point",
                ylab = "Realisaitons of double-click point")
