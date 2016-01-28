@@ -21,26 +21,29 @@ interactiveCategorical <- function(x) {
     stop("Expected object of class Simulations")
   }
   
-  # Check if x is of continuous data
-  if (hasValues(x@Mean) != T) {
-    stop("simulations object expected to contain continuous data")
+  # Check if x is of categorical data
+  if (hasValues(x@Most.Likely.Class) != T) {
+    stop("simulations object expected to contain categorical data")
   }
   
   shinyApp(
     ui = fluidPage(
       titlePanel("Visualisation of Categorical Data"),
+      sidebarLayout(
+        sidebarPanel(h6("This application allows the user to select a point
+                        in the categorical map and view the class probabilities
+                        for that specfic point.")),
       mainPanel(
         fluidRow(
           column(6,
           plotOutput("catPlot1",
-                     click = clickOpts(id = "catPlot_click"),
-                     dblclick = dblclickOpts(id = "catPlot_dblclick")
-          )
+                     click = clickOpts(id = "catPlot_click")
+                     )
           ),
           column(6, plotOutput("catPlot2")
           )
         )
-      )
+      ))
     ),
     
     server = function(input, output) {

@@ -30,6 +30,10 @@ interactiveContinuous <- function(x){
       titlePanel("Visualisation of Continuous Data"),
       sidebarLayout(
       sidebarPanel(
+        p("This application allows the user to select a point
+           in the map to view the realisations found at that point.
+           Double-clicking activates a scatterplot of the realisations
+           of the single- and double-clicked point."),
         radioButtons("options", "Display Options",
                      choices = c("Mean",
                                  "Standard Deviation"),
