@@ -162,7 +162,7 @@ interactiveContinuous <- function(x){
         if (!is.null(input$contPlot_click)) {
           mat <- matrix(c(input$contPlot_click$x, input$contPlot_click$y), ncol = 2)
           Realisations <- extract(x@Realisations, mat)
-          hist(Realisations) 
+          hist(Realisations, xlab = "Value of Realisations") 
         }
       })
       
