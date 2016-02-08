@@ -3,6 +3,8 @@
 #' Allows for visualising spatial uncertainty for categorical data in an 
 #' interactive interface. Allows for more knowledge about class probabilities at
 #' a certain location.
+#' If data contains NA values, consider changing these to NaN values for a more
+#' insightful visualisations.
 #' 
 #' @param x Object of class simulations. Must contain continuous data.
 #'   
@@ -30,10 +32,12 @@ interactiveContinuous <- function(x){
       titlePanel("Visualisation of Continuous Data"),
       sidebarLayout(
       sidebarPanel(
-        p("This application allows the user to select a point
-           in the map to view the realisations found at that point.
-           Double-clicking activates a scatterplot of the realisations
-           of the single- and double-clicked point."),
+        p("This application allows the user to explore the continuous datset: 
+           Single-clicking a point in the map allows the user to view the 
+           realisations found at that point.
+           In addition, through double-clicking a second, seperate point, a 
+           scatterplot of the realisations found at the single-clicked and 
+           double-clicked is displayed."),
         radioButtons("options", "Display Options",
                      choices = c("Mean",
                                  "Standard Deviation"),
@@ -47,7 +51,11 @@ interactiveContinuous <- function(x){
         conditionalPanel("input.statistics == 'Relative Error'",
                          uiOutput("relerrorslider")),
         conditionalPanel("input.statistics == 'Prediction Interval'",
-                         uiOutput("predinterval"))
+                         uiOutput("predinterval")),
+        p("They greyed-out areas in the map represent areas that have a relative
+          error larger than the selected relative error or a prediction interval
+          width larger than the threshold chosen.")
+        
       ),
       mainPanel(
         fluidRow(
@@ -114,14 +122,14 @@ interactiveContinuous <- function(x){
           if (input$statistics == "Relative Error"){  
             for (i in 1:length(mean.df$layer)){
               if (rel.error[i] > input$relerror) {
-                mean.df$layer[i] <- NaN
+                mean.df$layer[i] <- NA
               }
             }
           }
           if (input$statistics == "Prediction Interval"){
             for (i in 1:length(mean.df$layer)){
               if (quantileValue()[i,1] > input$predinterval) {
-                mean.df$layer[i] <- NaN
+                mean.df$layer[i] <- NA
               }
             }
           }
@@ -136,14 +144,14 @@ interactiveContinuous <- function(x){
           if (input$statistics == "Relative Error"){  
             for (i in 1:length(mean.df$layer)){
               if (rel.error[i] > input$relerror) {
-                std.df$layer[i] <- NaN
+                std.df$layer[i] <- NA
               }
             }
           }
           if (input$statistics == "Prediction Interval"){
             for (i in 1:length(mean.df$layer)){
               if (quantileValue()[i,1] > input$predinterval) {
-                std.df$layer[i] <- NaN
+                std.df$layer[i] <- NA
               }
             }
           }
