@@ -52,11 +52,8 @@ interactiveCategorical <- function(x) {
       clpb.df<- as.data.frame(x@Class.Probabilities, xy = T)
       
       theme <- theme(plot.title = element_text(),
-                     panel.grid = element_blank(),
                      panel.border = element_rect(colour = "black", fill = "NA"),
                      axis.ticks = element_blank(),
-                     axis.text.y = element_blank(),
-                     axis.text.x = element_blank(),
                      axis.title = element_blank(),
                      strip.background = element_blank(),
                      legend.title = element_text(size = 14, face = "bold"),

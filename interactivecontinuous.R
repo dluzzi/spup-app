@@ -53,8 +53,9 @@ interactiveContinuous <- function(x){
         conditionalPanel("input.statistics == 'Prediction Interval'",
                          uiOutput("predinterval")),
         p("They greyed-out areas in the map represent areas that have a relative
-          error larger than the selected relative error or a prediction interval
-          width larger than the threshold chosen.")
+          error larger than the selected relative error. For the prediction interval,
+          areas are greyed-out that have a interquantile range larger than the 
+          threshold selected.")
         
       ),
       mainPanel(
@@ -80,11 +81,8 @@ interactiveContinuous <- function(x){
       rel.error[is.na(rel.error)] <- -1
       
       theme <- theme(plot.title = element_text(),
-                     panel.grid = element_blank(),
                      panel.border = element_rect(colour = "black", fill = "NA"),
                      axis.ticks = element_blank(),
-                     axis.text.y = element_blank(),
-                     axis.text.x = element_blank(),
                      axis.title = element_blank(),
                      strip.background = element_blank(),
                      legend.title = element_text(size = 14, face = "bold"),
@@ -114,7 +112,7 @@ interactiveContinuous <- function(x){
         list(
           radioButtons("quantileWidth", "Prediction Interval Width", choices = c("50%" = "1", 
                                                                                  "90%" = "2")),
-          numericInput("predinterval", "Width Threshold", value = 50 , min = 0, max = 10000, step = 5))
+          numericInput("predinterval", "Threshold of interquantile range", value = 50 , min = 0, max = 10000, step = 5))
       })
       
       output$contPlot1 <- renderPlot({
