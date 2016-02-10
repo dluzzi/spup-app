@@ -54,7 +54,7 @@ interactiveContinuous <- function(x){
                          uiOutput("predinterval")),
         p("They greyed-out areas in the map represent areas that have a relative
           error larger than the selected relative error. For the prediction interval,
-          areas are greyed-out that have a interquantile range larger than the 
+          areas are greyed-out that have an interquantile range larger than the 
           threshold selected.")
         
       ),
@@ -90,13 +90,7 @@ interactiveContinuous <- function(x){
                      legend.text = element_text(size = 12))
       
       quantileValue <- reactive({
-        quantile <- input$quantileWidth
-        if (quantile == "1"){
-          threshold <- x@Quantiles$X75. - x@Quantiles$X25.
-        }
-        if (quantile == "2"){
-          threshold <- x@Quantiles$X95. - x@Quantiles$X5.
-        }
+        threshold <- x@Quantiles$X95. - x@Quantiles$X5.
         threshold <- as.data.frame(threshold)
         threshold[is.na(threshold)] <- -1
         return(threshold)
@@ -109,10 +103,7 @@ interactiveContinuous <- function(x){
       })
       
       output$predinterval <- renderUI({
-        list(
-          radioButtons("quantileWidth", "Prediction Interval Width", choices = c("50%" = "1", 
-                                                                                 "90%" = "2")),
-          numericInput("predinterval", "Threshold of interquantile range", value = 50 , min = 0, max = 10000, step = 5))
+          numericInput("predinterval", "Threshold of interquantile range", value = 50 , min = 0, max = 10000, step = 5)
       })
       
       output$contPlot1 <- renderPlot({
