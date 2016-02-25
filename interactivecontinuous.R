@@ -54,7 +54,7 @@ interactiveContinuous <- function(x){
                          uiOutput("predinterval")),
         p("They greyed-out areas in the map represent areas that have a relative
           error larger than the selected relative error. For the prediction interval,
-          areas are greyed-out that have an interquantile range larger than the 
+          areas are greyed-out that have an interquartile range larger than the 
           threshold selected.")
         
       ),
