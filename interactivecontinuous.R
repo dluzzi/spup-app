@@ -12,6 +12,7 @@
 #' @export
 #' 
 #' @examples
+#' 
 interactiveContinuous <- function(x){
   require(shiny)
   require(ggplot2)

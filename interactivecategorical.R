@@ -11,6 +11,7 @@
 #' @export
 #' 
 #' @examples
+#' 
 interactiveCategorical <- function(x) {
   require(shiny)
   require(ggplot2)
